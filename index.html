@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>류봉두의 국어수업 — 어휘 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2F4F6;
+    --surface: #FFFFFF;
+    --surface2: #F8F9FA;
+    --primary: #3182F6;
+    --primary-light: #EBF3FE;
+    --primary-dark: #1A6EED;
+    --success: #00C471;
+    --success-light: #E5FAF1;
+    --danger: #F03E3E;
+    --danger-light: #FFF0F0;
+    --text1: #191F28;
+    --text2: #4E5968;
+    --text3: #8B95A1;
+    --border: #E5E8EB;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text1);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  .topbar {
+    width: 100%; max-width: 480px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0 12px;
+  }
+  .topbar-brand { font-size: 14px; font-weight: 800; color: var(--primary); letter-spacing: -0.3px; }
+  .topbar-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .topbar-user { font-size: 13px; color: var(--text2); font-weight: 600; display: none; }
+
+  .card {
+    width: 100%; max-width: 480px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    margin-top: 12px;
+  }
+
+  /* ---- START ---- */
+  .hero-emoji { font-size: 36px; margin-bottom: 14px; display: block; }
+  .hero-title { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; line-height: 1.25; margin-bottom: 8px; }
+  .hero-desc { font-size: 14px; color: var(--text2); line-height: 1.65; margin-bottom: 24px; }
+
+  .input-label { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 8px; }
+  .input-field {
+    width: 100%; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 16px; font-family: inherit; color: var(--text1);
+    background: var(--surface); outline: none; transition: border-color .2s;
+    margin-bottom: 20px;
+  }
+  .input-field:focus { border-color: var(--primary); }
+  .input-field::placeholder { color: var(--text3); }
+
+  /* 학년 선택 */
+  .grade-label { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; }
+  .grade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .grade-btn {
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    padding: 18px 12px; text-align: center; cursor: pointer;
+    transition: all .15s; background: var(--surface);
+  }
+  .grade-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .grade-btn.active { border-color: var(--primary); background: var(--primary-light); }
+  .grade-btn .g-num { font-size: 24px; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+  .grade-btn .g-label { font-size: 12px; color: var(--text2); margin-top: 3px; font-weight: 600; }
+  .grade-btn .g-count { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .grade-btn.active .g-label { color: var(--primary); }
+
+  /* BUTTONS */
+  .btn-primary {
+    width: 100%; background: var(--primary); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 16px; font-size: 16px; font-weight: 700;
+    font-family: inherit; cursor: pointer;
+    transition: background .15s, transform .1s; letter-spacing: -0.3px;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-primary:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; }
+  .btn-secondary {
+    width: 100%; background: var(--surface2); color: var(--text1);
+    border: none; border-radius: var(--radius-sm);
+    padding: 14px; font-size: 15px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: background .15s; margin-top: 10px;
+  }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-outline {
+    width: 100%; background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary); border-radius: var(--radius-sm);
+    padding: 14px; font-size: 15px; font-weight: 700;
+    font-family: inherit; cursor: pointer; transition: all .15s; margin-top: 10px;
+  }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-outline:disabled { border-color: var(--border); color: var(--text3); cursor: not-allowed; }
+
+  /* ---- QUIZ ---- */
+  .quiz-header { width: 100%; max-width: 480px; margin-top: 8px; }
+  .progress-bar-wrap { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+  .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width .4s ease; }
+  .quiz-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 12px; color: var(--text3); font-weight: 500; }
+  .quiz-score-badge { background: var(--primary-light); color: var(--primary); padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+  /* 실시간 레벨 */
+  .live-level-wrap {
+    margin-top: 10px; background: var(--surface2);
+    border-radius: var(--radius-sm); padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .live-level-emoji { font-size: 20px; flex-shrink: 0; }
+  .live-level-info { flex: 1; min-width: 0; }
+  .live-level-title { font-size: 12px; font-weight: 800; color: var(--text1); }
+  .live-level-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .live-pct-bar-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .live-pct-num { font-size: 13px; font-weight: 800; color: var(--primary); }
+  .live-pct-bar-bg { width: 70px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .live-pct-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease, background-color .4s ease; background: var(--primary); }
+
+  .q-type-tag { display: inline-block; background: var(--surface2); color: var(--text2); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px; }
+  .q-text { font-size: 18px; font-weight: 700; line-height: 1.5; letter-spacing: -0.5px; color: var(--text1); margin-bottom: 6px; }
+  .q-hint { font-size: 13px; color: var(--text3); margin-bottom: 22px; line-height: 1.6; }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+  .option-btn {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 15px 16px; font-size: 14px; font-weight: 500;
+    font-family: inherit; color: var(--text1); cursor: pointer; text-align: left;
+    transition: all .15s; line-height: 1.5; display: flex; align-items: center; gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.correct  { border-color: var(--success); background: var(--success-light); color: #00864E; }
+  .option-btn.wrong    { border-color: var(--danger);  background: var(--danger-light);  color: var(--danger); }
+  .option-btn.reveal   { border-color: var(--success); background: var(--success-light); color: #00864E; }
+  .option-btn:disabled { cursor: not-allowed; }
+  .opt-label {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--surface2); font-size: 12px; font-weight: 700; color: var(--text3); flex-shrink: 0;
+  }
+  .option-btn.correct .opt-label { background: var(--success); color: #fff; }
+  .option-btn.wrong   .opt-label { background: var(--danger);  color: #fff; }
+  .option-btn.reveal  .opt-label { background: var(--success); color: #fff; }
+
+  .feedback-box { border-radius: var(--radius-sm); padding: 14px 16px; font-size: 14px; font-weight: 500; line-height: 1.6; margin-bottom: 14px; display: none; }
+  .feedback-box.show { display: block; }
+  .feedback-box.ok { background: var(--success-light); color: #00864E; border-left: 4px solid var(--success); }
+  .feedback-box.ng { background: var(--danger-light);  color: #C92A2A; border-left: 4px solid var(--danger); }
+  .fb-title { font-weight: 800; margin-bottom: 4px; font-size: 15px; }
+  .fb-meaning { font-size: 13px; margin-top: 2px; }
+  .fb-example { font-size: 12px; color: var(--text3); margin-top: 6px; font-style: italic; }
+
+  /* ---- RESULT ---- */
+  /* 칭호 배너 */
+  .title-banner {
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #1A6EED 0%, #3182F6 100%);
+  }
+  .title-banner.gold   { background: linear-gradient(135deg, #B8860B 0%, #F5A623 100%); }
+  .title-banner.silver { background: linear-gradient(135deg, #5A7A8A 0%, #8EAABB 100%); }
+  .title-banner.bronze { background: linear-gradient(135deg, #7B5A3A 0%, #C08553 100%); }
+  .title-banner.green  { background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%); }
+  .title-banner.sprout { background: linear-gradient(135deg, #558B2F 0%, #7CB342 100%); }
+  .title-banner.red    { background: linear-gradient(135deg, #C62828 0%, #E53935 100%); }
+  .banner-emoji { font-size: 40px; display: block; margin-bottom: 8px; }
+  .banner-title { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .banner-sub { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.5; }
+
+  .result-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+  .rstat { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; }
+  .rstat-num { font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+  .rstat-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .rstat.c .rstat-num { color: var(--success); }
+  .rstat.w .rstat-num { color: var(--danger); }
+  .rstat.s .rstat-num { color: var(--primary); }
+
+  .send-status { text-align: center; font-size: 13px; font-weight: 600; padding: 12px; border-radius: var(--radius-sm); margin-top: 10px; display: none; }
+  .send-status.sending { background: var(--primary-light); color: var(--primary); display: block; }
+  .send-status.sent    { background: var(--success-light); color: #00864E; display: block; }
+  .send-status.failed  { background: var(--danger-light);  color: var(--danger); display: block; }
+
+  .section-title { font-size: 13px; font-weight: 700; color: var(--text2); margin: 20px 0 10px; display: flex; align-items: center; gap: 6px; }
+  .wrong-list { display: flex; flex-direction: column; gap: 8px; }
+  .wrong-item { background: var(--danger-light); border-radius: var(--radius-sm); padding: 12px 14px; border-left: 3px solid var(--danger); }
+  .wrong-word { font-size: 15px; font-weight: 700; color: var(--danger); margin-bottom: 3px; }
+  .wrong-meaning { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .wrong-example { font-size: 12px; color: var(--text3); margin-top: 4px; font-style: italic; }
+
+  .score-list { display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+  .score-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border-radius: var(--radius-sm); }
+  .score-rank { font-size: 13px; font-weight: 800; color: var(--text3); width: 22px; text-align: center; }
+  .score-rank.r1 { color: #F5A623; } .score-rank.r2 { color: #9B9B9B; } .score-rank.r3 { color: #C08553; }
+  .score-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .score-val { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .score-grade-badge { font-size: 10px; background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp .28s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="topbar-brand">류봉두의 국어수업</div>
+    <div class="topbar-sub">고흥대서중학교 어휘 퀴즈</div>
+  </div>
+  <div class="topbar-user" id="topbar-user"></div>
+</div>
+
+<!-- ========== START ========== -->
+<div id="screen-start" class="screen active">
+  <div class="card">
+    <span class="hero-emoji">📚</span>
+    <div class="hero-title">어휘 마스터<br>퀴즈</div>
+    <div class="hero-desc">뜻 찾기, 단어 찾기, 예문 추론 문제가<br>랜덤으로 섞여서 출제돼요.</div>
+
+    <div class="input-label">이름</div>
+    <input class="input-field" id="name-input" type="text" placeholder="예: 홍길동" maxlength="10" autocomplete="off">
+
+    <div class="grade-label">학년 선택</div>
+    <div class="grade-grid">
+      <div class="grade-btn active" data-grade="1" onclick="selectGrade(this,1)">
+        <div class="g-num">1학년</div>
+        <div class="g-label">필수 어휘</div>
+        <div class="g-count">120문제</div>
+      </div>
+      <div class="grade-btn" data-grade="2" onclick="selectGrade(this,2)">
+        <div class="g-num">2학년</div>
+        <div class="g-label">필수 어휘</div>
+        <div class="g-count">118문제</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="start-btn" onclick="startQuiz()" disabled>퀴즈 시작하기 →</button>
+  </div>
+
+  <div class="card" id="scoreboard-card" style="display:none;">
+    <div class="section-title">🏆 역대 기록</div>
+    <div class="score-list" id="score-list-start"></div>
+  </div>
+</div>
+
+<!-- ========== QUIZ ========== -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="quiz-meta">
+      <span id="quiz-progress">1 / 120</span>
+      <span class="quiz-score-badge" id="quiz-score-badge">0점</span>
+    </div>
+    <!-- 실시간 레벨 -->
+    <div class="live-level-wrap">
+      <div class="live-level-emoji" id="live-emoji">🌱</div>
+      <div class="live-level-info">
+        <div class="live-level-title" id="live-title">류봉두의 떡잎</div>
+        <div class="live-level-sub" id="live-sub">문제를 풀수록 레벨이 올라가요!</div>
+      </div>
+      <div class="live-pct-bar-wrap">
+        <div class="live-pct-num" id="live-pct">-</div>
+        <div class="live-pct-bar-bg">
+          <div class="live-pct-bar-fill" id="live-pct-bar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card" id="quiz-card">
+    <div class="q-type-tag" id="q-type-tag"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint" id="q-hint"></div>
+    <div class="options-list" id="options-list"></div>
+    <div class="feedback-box" id="feedback-box">
+      <div class="fb-title" id="fb-title"></div>
+      <div class="fb-meaning" id="fb-meaning"></div>
+      <div class="fb-example" id="fb-example"></div>
+    </div>
+    <button class="btn-primary" id="next-btn" style="display:none;" onclick="nextQuestion()">다음 문제 →</button>
+  </div>
+</div>
+
+<!-- ========== RESULT ========== -->
+<div id="screen-result" class="screen">
+  <div class="card">
+    <!-- 칭호 배너 -->
+    <div class="title-banner" id="title-banner">
+      <span class="banner-emoji" id="banner-emoji"></span>
+      <div class="banner-title" id="banner-title"></div>
+      <div class="banner-sub" id="banner-sub"></div>
+    </div>
+
+    <div class="result-stats">
+      <div class="rstat c"><div class="rstat-num" id="res-correct">0</div><div class="rstat-label">정답</div></div>
+      <div class="rstat w"><div class="rstat-num" id="res-wrong">0</div><div class="rstat-label">오답</div></div>
+      <div class="rstat s"><div class="rstat-num" id="res-score">0</div><div class="rstat-label">점수</div></div>
+    </div>
+
+    <button class="btn-primary" id="btn-send" onclick="sendToSheet()">📤 결과 전송하기</button>
+    <div class="send-status" id="send-status"></div>
+    <button class="btn-outline" onclick="retryQuiz()">🔄 다시 도전하기</button>
+    <button class="btn-secondary" onclick="goHome()">처음으로</button>
+
+    <div id="wrong-section" style="display:none;">
+      <div class="divider"></div>
+      <div class="section-title">❌ 틀린 단어 복습 <span id="wrong-count-badge" style="background:var(--danger-light);color:var(--danger);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;margin-left:4px;"></span></div>
+      <div class="wrong-list" id="wrong-list"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;">
+    <div class="section-title">🏆 역대 기록</div>
+    <div class="score-list" id="score-list-result"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SHEET URL (고정)
+// ============================================================
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwRSq4-LpNo8tVuRLLGLodvXJ1HyDYhJV6Dm4V3T0XF_d3CmT_ZDLpV-mRXDlqO9Egv1g/exec';
+
+// ============================================================
+// 1학년 단어 (120개)
+// ============================================================
+const WORDS_1 = [
+  {id:1,word:"요점",hanja:"要點",meaning:"말이나 글, 또는 사물의 가장 중심이 되는 중요한 부분.",example:"요점만 간추려 이야기하다."},
+  {id:2,word:"개요",hanja:"槪要",meaning:"전체적인 내용의 대강을 추린 것.",example:"개요를 먼저 작성하면 글을 쓸 때 도움이 된다."},
+  {id:3,word:"요소",hanja:"要素",meaning:"사물의 성립이나 효력 발생에 없어서는 안 되는 근본 조건.",example:"의식주는 인간 생활의 기본 요소이다."},
+  {id:4,word:"요긴하다",hanja:"要緊—",meaning:"꼭 필요하고 소중하다.",example:"이건 살림에 아주 요긴한 물건이야."},
+  {id:5,word:"방대하다",hanja:"尨大—",meaning:"규모나 양이 매우 크다.",example:"우리가 활용할 인터넷 공간의 자료들은 아주 방대하다."},
+  {id:6,word:"급진적",hanja:"急進的",meaning:"변화나 발전의 속도가 매우 빠르고 격렬한 것.",example:"둘 사이의 타협은 급진적으로 이루어졌다."},
+  {id:7,word:"비약적",hanja:"飛躍的",meaning:"단계를 밟지 않고 빠르게 발전하거나 향상되는 것.",example:"그 기계가 발명되면서 제품 생산량이 비약적으로 늘어났다."},
+  {id:8,word:"재간",hanja:"才幹",meaning:"어떤 일을 해낼 수 있는 재주와 능력.",example:"그냥 자기 말이 옳다고 우기는 데는 당할 재간이 없었다."},
+  {id:9,word:"구분",hanja:"區分",meaning:"일정한 기준에 따라 전체를 몇 개의 부분으로 나눔.",example:"읽은 책과 읽을 책을 구분했다."},
+  {id:10,word:"성찰",hanja:"省察",meaning:"자기의 마음을 반성하고 살핌.",example:"다른 사람의 삶을 살펴보는 것은 자신을 성찰하는 데 큰 도움을 준다."},
+  {id:11,word:"진솔하다",hanja:"眞率—",meaning:"진실하고 솔직하다.",example:"자신의 경험을 바탕으로 정서를 진솔하게 표현하는 글을 쓰자."},
+  {id:12,word:"의연하다",hanja:"毅然—",meaning:"의지가 굳세고 꿋꿋하다.",example:"그녀는 온갖 어려움 속에서도 항상 의연하다."},
+  {id:13,word:"생채기",hanja:"",meaning:"손톱이나 날카로운 것에 긁혀서 생긴 작은 상처.",example:"등산을 하다가 나뭇가지에 긁혀 다리에 생채기가 났다."},
+  {id:14,word:"시행착오",hanja:"試行錯誤",meaning:"목적 달성을 위해 여러 방법을 시도하는 과정에서 겪는 실패.",example:"여러 시행착오를 겪은 다음에 우리는 제품을 개발할 수 있었다."},
+  {id:15,word:"오도카니",hanja:"",meaning:"작은 것이 외따로 떨어져 있는 모양. 또는 아무것도 하지 않고 멍하니 있는 모양.",example:"어둠 속에서 오도카니 앉아 있는 그의 뒷모습은 무척 쓸쓸해 보였다."},
+  {id:16,word:"연단",hanja:"演壇",meaning:"연설이나 강연 등을 하기 위하여 올라서는 단.",example:"세 번째로 연단에 오른 입후보자는 점잖은 목소리로 연설을 시작했다."},
+  {id:17,word:"관용적",hanja:"慣用的",meaning:"오래전부터 습관적으로 굳어져 널리 쓰이는 것.",example:"다양한 집단의 언어에 대해 관용적인 태도를 지녀야 한다."},
+  {id:18,word:"전문어",hanja:"專門語",meaning:"특정 전문 분야에서 특별한 의미로 쓰는 말.",example:"전문어는 특정 분야의 전문적인 직업을 가진 사람들이 사용하는 어휘이다."},
+  {id:19,word:"상호 작용",hanja:"相互作用",meaning:"둘 이상의 것이 서로 영향을 주고받는 일.",example:"매체 생산자와 소비자는 댓글을 통해 실시간으로 상호 작용을 한다."},
+  {id:20,word:"신뢰성",hanja:"信賴性",meaning:"믿고 의지할 수 있는 성질.",example:"뉴스 및 각종 정보 매체 자료의 신뢰성을 평가한다."},
+  {id:21,word:"타당성",hanja:"妥當性",meaning:"사물의 이치에 맞는 옳고 마땅한 성질.",example:"정보의 신뢰성, 타당성, 공정성을 따져 보는 태도가 중요하다."},
+  {id:22,word:"공정성",hanja:"公正性",meaning:"어느 쪽으로도 치우치지 않고 올바른 성질.",example:"매체 정보를 수용할 때는 공정성을 고려해야 한다."},
+  {id:23,word:"영향력",hanja:"影響力",meaning:"다른 것에 영향을 미치는 힘.",example:"우리 집에서는 어머니의 영향력이 크다."},
+  {id:24,word:"양상",hanja:"樣相",meaning:"사물이나 현상의 모양이나 상태.",example:"기술이 발전하면서 사람들의 생활 양상이 크게 달라졌다."},
+  {id:25,word:"차별적",hanja:"差別的",meaning:"둘 이상의 대상을 각각 다르게 구별하여 대하는 것.",example:"타인에게 차별적이고 폭력적인 언어를 사용하지 말자."},
+  {id:26,word:"성화",hanja:"",meaning:"몹시 성가시게 구는 짓. 또는 그런 사람.",example:"쌍안경이 든 불룩한 주머니가 또 성화다."},
+  {id:27,word:"여의다",hanja:"",meaning:"부모나 사랑하는 사람이 죽어서 이별하다.",example:"부모님을 일찍 여의고 홀로 자랐다."},
+  {id:28,word:"당초",hanja:"當初",meaning:"일이 생기기 시작한 처음.",example:"당초 계획과는 달리 일이 틀어지고 말았다."},
+  {id:29,word:"필시",hanja:"必是",meaning:"틀림없이 꼭.",example:"그리고 필시 일은 나고 말리라."},
+  {id:30,word:"도시",hanja:"",meaning:"도무지. 전혀. (주로 부정어와 함께 쓰임)",example:"눈은 아물아물 가슴은 두근두근 도시 글이 읽히질 않는다."},
+  {id:31,word:"교만하다",hanja:"驕慢—",meaning:"잘난 체하며 남을 업신여기는 데가 있다.",example:"실력은 좋지만 태도가 교만하다는 평을 듣는다."},
+  {id:32,word:"궁리",hanja:"窮理",meaning:"어떤 일을 해결하기 위하여 이리저리 깊이 생각함.",example:"문제를 해결하기 위해 묘안을 궁리했다."},
+  {id:33,word:"구실",hanja:"",meaning:"어떤 행동에 대한 이유나 변명거리.",example:"그는 바쁘다는 구실로 모임에 빠졌다."},
+  {id:34,word:"허물",hanja:"",meaning:"잘못이나 실수로 인한 흠.",example:"친구의 허물을 탓하기보다 먼저 이해하려고 노력하자."},
+  {id:35,word:"축내다",hanja:"",meaning:"일정한 수나 양에서 모자람이 생기게 하다.",example:"쌀을 축내다."},
+  {id:36,word:"적적하다",hanja:"寂寂—",meaning:"외롭고 쓸쓸하다.",example:"빈방에 혼자 누워 있으니 몹시 적적하다."},
+  {id:37,word:"야박하다",hanja:"野薄—",meaning:"인정이 없고 인색하다.",example:"전쟁 통에는 이웃 간에 정이 없고 인심이 야박하다."},
+  {id:38,word:"정갈하다",hanja:"",meaning:"깨끗하고 깔끔하다.",example:"음식이 정갈하게 담겨 있어 보기에 좋다."},
+  {id:39,word:"수더분하다",hanja:"",meaning:"성격이 까다롭지 않고 무난하여 사귀기 쉽다.",example:"그는 성격이 수더분해서 친구가 많다."},
+  {id:40,word:"곰살궂다",hanja:"",meaning:"성질이 부드럽고 다정스러우며 친절하다.",example:"그녀는 성격이 곰살궂어 어른들께 인기가 많다."},
+  {id:41,word:"여낙낙하다",hanja:"",meaning:"성격이 너그럽고 상냥하여 잘 어울리다.",example:"은지는 정말 여낙낙한 친구야."},
+  {id:42,word:"우쭐거리다",hanja:"",meaning:"칭찬이나 성공으로 우쭐하며 뽐내다.",example:"어머니의 칭찬은 나를 우쭐거리게 했다."},
+  {id:43,word:"말문",hanja:"",meaning:"말을 시작할 수 있는 계기나 입장.",example:"수찬이는 일단 친해지면 말문이 터진다."},
+  {id:44,word:"삽시간",hanja:"霎時間",meaning:"매우 짧은 시간.",example:"나는 삽시간에 어른이 된 기분으로 길을 내달렸다."},
+  {id:45,word:"추론",hanja:"推論",meaning:"알려진 사실로부터 알려지지 않은 사실을 미루어 헤아리는 일.",example:"인물의 말과 행동을 통해 숨겨진 의미를 추론하며 읽어 보자."},
+  {id:46,word:"관점",hanja:"觀點",meaning:"사물이나 현상을 관찰할 때 보고 생각하는 태도나 방향.",example:"사물이나 현상을 관찰할 때 보고 생각하는 태도나 방향이다."},
+  {id:47,word:"맥락",hanja:"脈絡",meaning:"사물 따위가 서로 이어져 있는 관계나 연관.",example:"단어의 의미는 문장의 전체적인 맥락 속에서 파악해야 한다."},
+  {id:48,word:"의도",hanja:"意圖",meaning:"무엇을 하고자 하는 생각이나 계획.",example:"글쓴이가 이 정보를 전달하려는 의도가 무엇인지 파악해 보자."},
+  {id:49,word:"공유",hanja:"共有",meaning:"두 사람 이상이 한 물건이나 정보를 함께 소유함.",example:"자신이 쓴 글을 친구들과 공유하며 생각을 나누었다."},
+  {id:50,word:"품사",hanja:"品詞",meaning:"단어를 기능, 형태, 의미에 따라 나눈 갈래.",example:"공통된 성질에 따라 단어를 나눈 갈래이다."},
+  {id:51,word:"체언",hanja:"體言",meaning:"문장에서 주로 주어 구실을 하는 명사, 대명사, 수사를 통틀어 이르는 말.",example:"명사, 대명사, 수사를 묶어 체언이라고 한다."},
+  {id:52,word:"용언",hanja:"用言",meaning:"문장에서 서술어 기능을 하는 동사와 형용사를 통틀어 이르는 말.",example:"동사와 형용사는 형태가 변하는 용언에 해당한다."},
+  {id:53,word:"형태소",hanja:"形態素",meaning:"뜻을 가진 가장 작은 말의 단위.",example:"뜻을 가진 가장 작은 말의 단위이다."},
+  {id:54,word:"어근",hanja:"語根",meaning:"단어에서 실질적인 의미를 나타내는 중심 부분.",example:"한 단어의 중심 의미를 나타내는 부분이다."},
+  {id:55,word:"접사",hanja:"接辭",meaning:"어근에 붙어 그 의미를 제한하거나 새로운 단어를 만드는 부분.",example:"어근에 붙어 새로운 뜻을 더해 주는 주변 부분이다."},
+  {id:56,word:"단일어",hanja:"單一語",meaning:"하나의 형태소로 이루어진 단어.",example:"하나의 어근으로 이루어진 단어이다."},
+  {id:57,word:"복합어",hanja:"複合語",meaning:"둘 이상의 형태소가 결합하여 이루어진 단어.",example:"어근들이 결합하거나 어근과 접사가 결합해 만들어진 단어이다."},
+  {id:58,word:"합성어",hanja:"合成語",meaning:"둘 이상의 어근이 결합하여 이루어진 단어.",example:"둘 이상의 어근이 결합하여 이루어진 단어이다."},
+  {id:59,word:"파생어",hanja:"派生語",meaning:"어근에 접사가 붙어서 이루어진 단어.",example:"어근과 접사가 결합하여 이루어진 단어이다."},
+  {id:60,word:"성취감",hanja:"成就感",meaning:"목적한 것을 이루었을 때 느끼는 흡족한 느낌.",example:"포기하지 않고 계속 도전한 끝에 성공한 성취감을 느꼈다."},
+  {id:61,word:"형상화",hanja:"形象化",meaning:"추상적인 것을 구체적인 모양으로 나타냄.",example:"문학 작품은 작가의 생각을 구체적으로 형상화한 것이다."},
+  {id:62,word:"내면화",hanja:"內面化",meaning:"외부의 가치나 규범 등을 자신의 것으로 받아들임.",example:"문학의 가치를 내면화하는 능력을 기르자."},
+  {id:63,word:"갈등",hanja:"葛藤",meaning:"서로 다른 생각이나 이해관계 등이 부딪혀 충돌하는 상태.",example:"인물의 마음속에서 일어나는 대립과 충돌을 갈등이라고 한다."},
+  {id:64,word:"비유",hanja:"比喩",meaning:"어떤 현상이나 사물을 비슷한 것에 빗대어 표현하는 일.",example:"적절한 비유 표현을 사용하면 글이 더욱 참신해진다."},
+  {id:65,word:"암시",hanja:"暗示",meaning:"넌지시 알려 줌. 또는 그런 힌트.",example:"주제를 암시하거나 흥미를 줄 수 있는 제목을 정하자."},
+  {id:66,word:"참신하다",hanja:"嶄新—",meaning:"새롭고 산뜻하다.",example:"더욱 참신하고 생동감 있는 글을 써 보자."},
+  {id:67,word:"보상",hanja:"報償",meaning:"남에게 진 빚이나 받은 손해를 갚음. 또는 그 대가.",example:"친구는 아무런 보상도 바라지 않고 나를 도와주었다."},
+  {id:68,word:"막연하다",hanja:"漠然—",meaning:"뚜렷하지 않고 어렴풋하다.",example:"영수는 앞으로 살아갈 일이 막연할 따름이었다."},
+  {id:69,word:"시스템",hanja:"system",meaning:"필요한 기능을 실현하기 위해 관련 요소를 어떤 법칙에 따라 조합한 집합체.",example:"컴퓨터 보안 시스템에 해커가 침입했다."},
+  {id:70,word:"보급",hanja:"普及",meaning:"널리 퍼지거나 퍼뜨림.",example:"신기술이 보급되면서 우리 삶의 모습이 바뀌었다."},
+  {id:71,word:"수용",hanja:"受容",meaning:"받아들임.",example:"매체 정보를 현명하게 수용하기 위해 노력해야 한다."},
+  {id:72,word:"점검",hanja:"點檢",meaning:"낱낱이 검사함.",example:"이 단원에서 배운 내용을 점검해 보자."},
+  {id:73,word:"세분화",hanja:"細分化",meaning:"사물이나 개념 등을 더욱 잘게 나눔.",example:"발표 내용을 세분화하여 다시 정리하였다."},
+  {id:74,word:"직결",hanja:"直結",meaning:"직접 이어짐. 또는 직접 이어 맺음.",example:"환경 오염은 인간의 생존 문제와 직결된다."},
+  {id:75,word:"배려",hanja:"配慮",meaning:"도와주거나 보살펴 주려고 마음을 씀.",example:"그의 세심한 배려에 따뜻한 인간미를 느꼈다."},
+  {id:76,word:"책무",hanja:"責務",meaning:"책임이 있는 임무.",example:"여러분의 책무가 크다는 것을 명심해야 한다."},
+  {id:77,word:"북새통",hanja:"",meaning:"많은 사람이 한데 모여 몹시 떠들썩하고 혼잡한 모양.",example:"시장이 많은 사람들로 북새통이다."},
+  {id:78,word:"명예 훼손",hanja:"名譽毁損",meaning:"다른 사람의 사회적 평가를 낮추는 행위.",example:"제3자에게 명예를 훼손하는 말을 퍼뜨리는 것은 언어폭력이다."},
+  {id:79,word:"차용",hanja:"借用",meaning:"남의 것을 빌려서 씀.",example:"외국어로부터 사물과 함께 차용되는 외래어도 있다."},
+  {id:80,word:"비판적",hanja:"批判的",meaning:"현상이나 사물의 옳고 그름을 분별하여 판단하는 것.",example:"매체 정보를 비판적으로 수용하는 안목을 길러야 한다."},
+  {id:81,word:"신속성",hanja:"迅速性",meaning:"매우 빠른 성질.",example:"매체의 신속성 측면에서 특성을 비교해 보자."},
+  {id:82,word:"타협",hanja:"妥協",meaning:"어떤 일을 서로 양보하여 협의함.",example:"꿈과 현실 사이에서 어쩔 수 없이 타협하다."},
+  {id:83,word:"성취",hanja:"成就",meaning:"목적한 것을 이룸.",example:"도전 끝에 얻은 성취는 값지다."},
+  {id:84,word:"기개",hanja:"氣槪",meaning:"의지가 강하고 씩씩한 기운.",example:"사물을 겁내지 아니하는 기개와 씩씩한 기운."},
+  {id:85,word:"추월",hanja:"追越",meaning:"뒤에서 따라가다가 앞질러 감.",example:"우리 팀은 이기고 있다가 상대 팀에게 추월을 당했다."},
+  {id:86,word:"여파",hanja:"餘波",meaning:"어떤 일이 끝난 뒤에 남아 미치는 영향.",example:"태풍의 여파로 배추가 금추로 불렸다."},
+  {id:87,word:"소통",hanja:"疏通",meaning:"뜻이 서로 통함.",example:"두 사람이 원활히 소통하기에는 주변이 너무 시끄러웠다."},
+  {id:88,word:"초벌",hanja:"",meaning:"맨 처음으로 하는 일. 또는 그 처음의 것.",example:"초벌을 한 다음에 무엇을 해야 하나요?"},
+  {id:89,word:"철점",hanja:"鐵點",meaning:"도자기 표면에 나타나는 철분으로 인한 검은 점.",example:"흙의 철분 성분 때문에 도자기 표면에 철점이 생긴다."},
+  {id:90,word:"요철",hanja:"凹凸",meaning:"우묵하게 들어간 부분과 볼록하게 나온 부분.",example:"요철도 부드럽게 다듬어 주어야 한다."},
+  {id:91,word:"유래",hanja:"由來",meaning:"사물이나 일이 생겨남. 또는 그 내력.",example:"커튼콜은 유럽의 관습에서 유래했다."},
+  {id:92,word:"관습",hanja:"慣習",meaning:"어떤 사회에서 오랫동안 지켜 내려와 널리 인정하는 질서나 풍습.",example:"공연이 끝난 뒤에도 박수를 치던 관습이 있었다."},
+  {id:93,word:"판가름",hanja:"",meaning:"일의 옳고 그름이나 이기고 짐 등을 판단하는 일.",example:"커튼콜 횟수로 공연의 성공 여부를 판가름하기도 한다."},
+  {id:94,word:"입체적 구성",hanja:"立體的構成",meaning:"시간 순서에 따르지 않고 다양한 방식으로 이야기를 배열하는 구성 방식.",example:"이 소설은 시간 순서가 뒤섞인 입체적 구성을 취하고 있다."},
+  {id:95,word:"줄거리",hanja:"",meaning:"이야기나 사건 등의 주요 내용을 간추린 것.",example:"작품의 전체적인 줄거리를 파악해 보자."},
+  {id:96,word:"가속",hanja:"加速",meaning:"속도를 더함. 또는 빨라지는 속도.",example:"페달을 밟지 않고도 가속이 붙었다."},
+  {id:97,word:"곡예",hanja:"曲藝",meaning:"재주를 부려 어려운 동작을 해 보이는 놀이.",example:"그 모습이 마치 곡예를 하는 것 같았다."},
+  {id:98,word:"쾌감",hanja:"快感",meaning:"무엇을 이루거나 할 때 느끼는 즐거운 감정.",example:"성공했을 때의 쾌감과 성취감을 느꼈다."},
+  {id:99,word:"도랑",hanja:"",meaning:"폭이 좁고 작은 개울.",example:"자전거는 도랑과 똥통 옆을 지나고 있었다."},
+  {id:100,word:"원리",hanja:"原理",meaning:"사물의 근본이 되는 이치.",example:"시와 춤도 모두 같은 원리에 따라 움직인다."},
+  {id:101,word:"자백",hanja:"自白",meaning:"자기의 잘못이나 비밀을 스스로 고백함.",example:"문기는 선생님께 지금까지의 일을 자백하려고 한다."},
+  {id:102,word:"곤경",hanja:"困境",meaning:"어렵고 딱한 처지나 형편.",example:"자신 때문에 곤경에 빠진 점순이를 보고 미안함을 느꼈다."},
+  {id:103,word:"죄책감",hanja:"罪責感",meaning:"자신이 잘못을 저질렀다는 느낌이나 의식.",example:"문기는 미안함과 죄책감을 느낀다."},
+  {id:104,word:"대립",hanja:"對立",meaning:"두 대상이 서로 맞서거나 버팀.",example:"인물 사이에서 일어나는 대립과 충돌을 갈등이라고 한다."},
+  {id:105,word:"추상적",hanja:"抽象的",meaning:"직접 경험하거나 지각할 수 없는, 구체성이 없는 것.",example:"사랑이나 우정 같은 추상적인 대상의 이름을 나타내는 말이 있다."},
+  {id:106,word:"지전",hanja:"紙錢",meaning:"종이로 만든 돈. 지폐.",example:"지전 몇 장을 고깃간 주인에게 내밀었다."},
+  {id:107,word:"둥구미",hanja:"",meaning:"짚으로 엮어 만든 둥글고 큰 그릇.",example:"둥구미에 담긴 물건을 확인했다."},
+  {id:108,word:"주뼛주뼛하다",hanja:"",meaning:"겁이 나거나 두려워서 망설이며 선뜻 나서지 못하는 모양.",example:"문기는 주뼛주뼛하며 삼촌 앞으로 다가갔다."},
+  {id:109,word:"느물거리다",hanja:"",meaning:"능청스럽게 남을 교묘히 꾀거나 속이는 태도를 보이다.",example:"수만이는 느물거리며 문기를 꼬드겼다."},
+  {id:110,word:"다리오금",hanja:"",meaning:"무릎 뒤쪽의 오목하게 들어간 부분.",example:"겁이 난 문기는 다리오금이 떨렸다."},
+  {id:111,word:"공무 집행 방해",hanja:"公務執行妨害",meaning:"공무원이 직무를 수행하는 것을 방해하는 행위.",example:"옥분 할머니는 공무 집행 방해로 신고당할 뻔했다."},
+  {id:112,word:"절박하다",hanja:"切迫—",meaning:"형편이나 처지가 몹시 급하고 어렵다.",example:"당시 옥분의 상황은 매우 절박했다."},
+  {id:113,word:"건들바람",hanja:"",meaning:"초가을에 선들선들 부는 서늘한 바람.",example:"초가을에 선들선들 부는 건들바람이 시원하다."},
+  {id:114,word:"된서리",hanja:"",meaning:"늦가을에 몹시 독하게 내리는 서리.",example:"늦가을에 아주 되게 내리는 된서리를 조심하자."},
+  {id:115,word:"무서리",hanja:"",meaning:"늦가을에 처음 내리는 묽은 서리.",example:"늦가을에 처음 내리는 묽은 서리인 무서리가 내렸다."},
+  {id:116,word:"올서리",hanja:"",meaning:"제철보다 일찍 내리는 서리.",example:"제철보다 일찍 내리는 올서리가 관찰되었다."},
+  {id:117,word:"사흘",hanja:"",meaning:"세 날. 삼 일.",example:"5월 27~29일 사흘 연휴가 확정되었다."},
+  {id:118,word:"나흘",hanja:"",meaning:"네 날. 사 일.",example:"나흘 동안 비가 그치지 않고 내렸다."},
+  {id:119,word:"되",hanja:"",meaning:"곡식, 가루, 액체 등의 분량을 헤아리는 단위. 한 되는 한 말의 10분의 1.",example:"아기 장수 우투리에서 콩 한 되라는 단위가 나온다."},
+  {id:120,word:"포기",hanja:"",meaning:"배추나 무 따위의 낱낱의 덩이를 세는 단위.",example:"배추 몇 포기를 심었는지 세어 보자."},
+];
+
+// ============================================================
+// 2학년 단어 (118개)
+// ============================================================
+const WORDS_2 = [
+  {id:1,word:"고역",hanja:"苦役",meaning:"몹시 힘들고 고생스러운 일.",example:"맛없는 음식을 억지로 먹는 것은 정말 고역이다."},
+  {id:2,word:"을씨년스럽다",hanja:"",meaning:"날씨나 분위기가 춥고 스산하여 어쩐지 쓸쓸하고 불길한 느낌이 있다.",example:"쌀쌀한 가을 아침에 내리는 비는 한층 을씨년스럽다."},
+  {id:3,word:"도사리다",hanja:"",meaning:"나쁜 것이 어느 곳에 숨어서 기회를 엿보다.",example:"큰물이 지나간 강둑에는 곳곳에 위험이 도사리고 있었다."},
+  {id:4,word:"주워섬기다",hanja:"",meaning:"이것저것 닥치는 대로 말하거나 끌어다 대다.",example:"지원이는 아무 이름이나 주워섬기며 위기를 모면하려고 애썼다."},
+  {id:5,word:"어깻죽지",hanja:"",meaning:"어깨에 팔이 붙은 부분.",example:"어깻죽지가 결리도록 일을 했다."},
+  {id:6,word:"장딴지",hanja:"",meaning:"종아리의 살이 불룩한 부분.",example:"오래 걸었더니 장딴지가 뭉쳤다."},
+  {id:7,word:"넓적다리",hanja:"",meaning:"다리에서 무릎 관절 위의 부분.",example:"넓적다리에 힘을 주어 자전거 페달을 밟았다."},
+  {id:8,word:"정강이",hanja:"",meaning:"무릎 아래에서 앞 뼈가 있는 부분.",example:"공에 맞아 정강이가 아팠다."},
+  {id:9,word:"명치",hanja:"",meaning:"사람의 복장뼈 아래 한가운데의 오목하게 들어간 곳.",example:"놀란 탓에 명치가 답답하게 조여들었다."},
+  {id:10,word:"볼기",hanja:"",meaning:"뒤쪽 허리 아래, 허벅다리 위의 양쪽으로 살이 불룩한 부분.",example:"어린 시절에는 볼기를 맞으면 혼이 났다."},
+  {id:11,word:"성찰",hanja:"省察",meaning:"자기의 마음을 반성하고 살핌.",example:"자신의 삶을 성찰할 수 있는 능력을 길러 봅시다."},
+  {id:12,word:"향유",hanja:"享有",meaning:"누리어 가짐.",example:"문학을 능동적으로 향유하는 태도를 갖는 것이 중요합니다."},
+  {id:13,word:"진솔",hanja:"眞率",meaning:"거짓이나 꾸밈이 없이 참되고 솔직함.",example:"서로의 감정이나 바라는 바를 진솔하게 표현하면서 갈등을 조정한다."},
+  {id:14,word:"조정",hanja:"調整",meaning:"어떤 기준이나 실정에 맞게 정돈함.",example:"갈등을 조정하는 대화 방법을 이해할 수 있다."},
+  {id:15,word:"음운",hanja:"音韻",meaning:"말의 뜻을 구별하여 주는 소리의 가장 작은 단위.",example:"국어의 음운 체계와 그 특성을 탐구해 봅시다."},
+  {id:16,word:"복합양식",hanja:"複合樣式",meaning:"언어, 이미지, 소리 등 다양한 의미 전달 방식이 결합된 형태.",example:"복합양식 자료의 이해·비판·생산으로 이어지는 능력을 기른다."},
+  {id:17,word:"문해력",hanja:"文解力",meaning:"글을 읽고 이해하는 능력.",example:"미디어 문해력을 기르기 위해 광고나 홍보물을 분석한다."},
+  {id:18,word:"타당성",hanja:"妥當性",meaning:"사물의 이치에 맞는 옳고 마땅한 성질.",example:"글이나 자료를 읽고 내용의 타당성과 표현의 적절성을 평가한다."},
+  {id:19,word:"신뢰성",hanja:"信賴性",meaning:"믿고 의지할 수 있는 성질.",example:"뉴스 및 각종 정보 매체 자료의 신뢰성을 평가한다."},
+  {id:20,word:"재현",hanja:"再現",meaning:"다시 나타남. 또는 다시 나타냄.",example:"매체 자료의 재현 방식을 이해하고 광고나 홍보물을 분석한다."},
+  {id:21,word:"내재",hanja:"內在",meaning:"어떤 사물이나 범위의 안에 들어 있음.",example:"복합양식으로 구성된 글이나 자료에 내재된 필자의 관점을 파악한다."},
+  {id:22,word:"관점",hanja:"觀點",meaning:"사물이나 현상을 관찰할 때 보고 생각하는 태도나 방향.",example:"해인이는 선배들의 작품을 자신의 관점에서 재해석하였다."},
+  {id:23,word:"건의",hanja:"建議",meaning:"어떤 일에 대하여 의견이나 희망을 말함.",example:"학생들의 건의에 따라 휴게실을 설치하기로 하였다."},
+  {id:24,word:"고정 관념",hanja:"固定觀念",meaning:"쉽게 바뀌지 않는 확고한 생각이나 관념.",example:"고정 관념에 사로잡히지 않으려면 열린 마음으로 세상을 봐야 한다."},
+  {id:25,word:"쟁점",hanja:"爭點",meaning:"서로 다투는 중심이 되는 점.",example:"두 사람의 주장을 정리한 뒤 쟁점을 도출해 주기를 요청했다."},
+  {id:26,word:"도출",hanja:"導出",meaning:"어떤 생각이나 결론을 이끌어 냄.",example:"두 사람의 주장을 정리한 뒤 쟁점을 도출해 주기를 요청했다."},
+  {id:27,word:"가상",hanja:"假想",meaning:"사실이 아니거나 사실 여부가 분명하지 않은 것을 사실인 것처럼 가정하여 생각함.",example:"컴퓨터 게임에서 만나는 가상의 세계는 현실 세계와 많이 다르다."},
+  {id:28,word:"공유",hanja:"共有",meaning:"두 사람 이상이 한 물건이나 정보를 함께 소유함.",example:"편리한 공유 기능으로 동료 교사와 협업하며 자료를 만든다."},
+  {id:29,word:"창제",hanja:"創製",meaning:"처음으로 만들어 냄.",example:"훈민정음 자음과 모음의 창제 및 운용 원리를 알아봅시다."},
+  {id:30,word:"운용",hanja:"運用",meaning:"무엇을 실제로 활용하여 움직임.",example:"훈민정음 자음과 모음의 창제 및 운용 원리를 학습한다."},
+  {id:31,word:"과학성",hanja:"科學性",meaning:"과학적인 성질이나 특성.",example:"한글의 과학성은 많은 학자들이 인정하는 부분이다."},
+  {id:32,word:"체계",hanja:"體系",meaning:"일정한 원리에 따라 낱낱의 부분이 짜임새 있게 조직되어 통일된 전체.",example:"보고서를 작성하기 위해 자료를 모은 뒤 체계를 갖추어 정리하였다."},
+  {id:33,word:"거푼거푼",hanja:"",meaning:"물체의 한 부분이 바람에 들려 자꾸 가볍게 움직이는 모양.",example:"깃발이 바람에 거푼거푼 움직였다."},
+  {id:34,word:"건들건들",hanja:"",meaning:"바람이 부드럽게 살랑거리며 부는 모양.",example:"봄바람이 건들건들 불어왔다."},
+  {id:35,word:"다팔다팔",hanja:"",meaning:"탐스러운 물건 따위가 조금 길게 늘어져 바람에 흔들리는 모양.",example:"수양버들 가지가 다팔다팔 흔들렸다."},
+  {id:36,word:"냉해",hanja:"冷害",meaning:"이상 저온 현상으로 농작물이 자라는 도중에 입는 피해.",example:"이상 저온 현상으로 농작물이 자라는 도중에 입는 피해를 냉해라고 한다."},
+  {id:37,word:"폭염",hanja:"暴炎",meaning:"기온이 정상적인 상태를 벗어난 매우 심한 더위.",example:"연일 계속되는 폭염에 야외 활동을 자제해야 한다."},
+  {id:38,word:"논리",hanja:"論理",meaning:"말이나 글에서 사고를 이치에 맞게 이끌어 가는 과정이나 원리.",example:"주장을 뒷받침하는 논리가 탄탄해야 글이 설득력을 얻는다."},
+  {id:39,word:"논점",hanja:"論點",meaning:"논의나 논쟁에서 중심이 되는 문제점.",example:"토론에서 논점을 흐리면 결론을 내리기 어렵다."},
+  {id:40,word:"논거",hanja:"論據",meaning:"논설이나 논증의 근거.",example:"제 말의 문제점에 대해 구체적이고 정확한 논거를 제시해 주시겠어요?"},
+  {id:41,word:"전제",hanja:"前提",meaning:"어떤 사물이나 현상을 이루기 위하여 먼저 내세우는 것.",example:"협상은 서로의 양보를 전제로 한다."},
+  {id:42,word:"규제",hanja:"規制",meaning:"규칙이나 규정에 의하여 일정한 한도를 정하거나 정한 한도를 넘지 못하게 막음.",example:"예술 작품을 지나치게 규제하는 것은 결코 바람직하지 않다."},
+  {id:43,word:"폐사",hanja:"斃死",meaning:"죽어 없어짐.",example:"갑작스러운 수온 변화로 물고기들이 폐사했다."},
+  {id:44,word:"강구",hanja:"講究",meaning:"좋은 대책이나 방법을 찾아냄.",example:"우리는 이마를 맞대고 모여 앉아서 대책을 강구했다."},
+  {id:45,word:"이치",hanja:"理致",meaning:"사물의 정당한 조리. 또는 도리에 맞는 근거.",example:"죄지으면 벌을 받는 것은 당연한 이치이다."},
+  {id:46,word:"상기",hanja:"想起",meaning:"지난 일을 돌이켜 생각함.",example:"일상 속에서 잊고 지내던 중요한 가치나 감정을 상기시켜 준다."},
+  {id:47,word:"피동",hanja:"被動",meaning:"주어가 다른 대상에 의해 동작을 당하게 되는 것.",example:"피동 표현을 활용하면 행위의 주체를 감출 수 있다."},
+  {id:48,word:"인용",hanja:"引用",meaning:"남의 말이나 글을 자신의 말이나 글 속에 끌어 씀.",example:"인용 표현을 활용하여 글의 객관성 및 생동감을 높인다."},
+  {id:49,word:"객관",hanja:"客觀",meaning:"자기와의 관계에서 벗어나 제삼자의 입장에서 사물을 보거나 생각하는 것.",example:"인용 표현을 활용하여 글의 객관성 및 생동감을 높인다."},
+  {id:50,word:"생동감",hanja:"生動感",meaning:"생기 있게 살아 움직이는 듯한 느낌.",example:"현장의 목소리를 직접 인용하면 글에 생동감이 생긴다."},
+  {id:51,word:"전망",hanja:"展望",meaning:"앞날의 일을 미리 헤아려 봄.",example:"경찰 조사는 당분간 어려움을 겪을 것으로 전망된다."},
+  {id:52,word:"보완",hanja:"補完",meaning:"모자라거나 부족한 것을 보충하여 완전하게 함.",example:"자신이 활용한 읽기 전략을 평가하고, 부족한 부분을 보완한다."},
+  {id:53,word:"수립",hanja:"樹立",meaning:"계획이나 법 따위를 이루어 세움.",example:"성찰한 내용을 바탕으로 구체적인 개선 방안을 수립하도록 한다."},
+  {id:54,word:"함량",hanja:"含量",meaning:"물질이 어떤 성분을 포함하고 있는 분량.",example:"이 식품의 단백질 함량이 매우 높다."},
+  {id:55,word:"지수",hanja:"指數",meaning:"여러 속성을 반영하여 하나의 수치로 나타낸 값.",example:"대기 오염 지수가 높으면 야외 활동을 자제해야 한다."},
+  {id:56,word:"주기",hanja:"週期",meaning:"같은 현상이 한 번 나타나고부터 다음번 되풀이되기까지의 기간.",example:"지구가 태양을 한 바퀴 도는 주기는 약 365일이다."},
+  {id:57,word:"출처",hanja:"出處",meaning:"사물이나 말 따위가 생기거나 나온 근거.",example:"인터넷 자료를 활용할 때는 반드시 출처를 밝혀야 한다."},
+  {id:58,word:"양질",hanja:"良質",meaning:"좋은 바탕이나 품질.",example:"양질의 콘텐츠를 꾸준히 제공하는 것이 중요하다."},
+  {id:59,word:"저렴",hanja:"低廉",meaning:"물건 따위의 값이 쌈.",example:"가격이 저렴하면서도 품질이 좋은 제품을 찾고 있다."},
+  {id:60,word:"이완",hanja:"弛緩",meaning:"팽팽하던 것이 느슨하게 풀림.",example:"잠을 자기 전에는 신체적·정신적 이완이 필요하다."},
+  {id:61,word:"실태",hanja:"實態",meaning:"실제의 상태나 형편.",example:"우리나라 청소년의 수면 실태를 조사한 신문 기사를 읽었다."},
+  {id:62,word:"기원",hanja:"起源",meaning:"사물이 처음으로 생김. 또는 그 근원.",example:"한자어 '來日'을 '내일'의 기원으로 추정할 뿐이다."},
+  {id:63,word:"추정",hanja:"推定",meaning:"미루어 생각하여 판정함.",example:"한자어 '來日'을 '내일'의 기원으로 추정할 뿐이다."},
+  {id:64,word:"너나들이",hanja:"",meaning:"서로 너니 나니 하고 부르며 허물없이 말을 건넴.",example:"오랜 친구 사이라 너나들이로 지낸다."},
+  {id:65,word:"도탑다",hanja:"",meaning:"정이 매우 두텁다.",example:"도타운 우정을 위해 서로에게 귀를 기울여 볼까요?"},
+  {id:66,word:"구순하다",hanja:"",meaning:"서로 사귀거나 지내는 데 사이가 좋아 화목하다.",example:"두 집안은 오랫동안 구순하게 지내 왔다."},
+  {id:67,word:"한올지다",hanja:"",meaning:"한 가닥의 실처럼 매우 가깝고 친밀하다.",example:"그 두 사람은 한올진 사이라 늘 붙어 다닌다."},
+  {id:68,word:"안달",hanja:"",meaning:"마음이 초조하고 답답하여 애태우는 짓.",example:"동생이 점심을 빨리 달라고 안달한다."},
+  {id:69,word:"경청",hanja:"傾聽",meaning:"귀를 기울여 들음.",example:"선생님께서는 끝까지 우리들의 의견을 경청하셨다."},
+  {id:70,word:"포용",hanja:"包容",meaning:"남을 너그럽게 감싸 주거나 받아들임.",example:"과거의 잘못을 포용하는 너그러운 마음이 필요하다."},
+  {id:71,word:"역력",hanja:"歷歷",meaning:"자취나 모양이 뚜렷하게 나타나 있는 상태.",example:"경기를 앞둔 선수들의 얼굴에는 긴장한 기색이 역력하다."},
+  {id:72,word:"아스라이",hanja:"",meaning:"보기에 아슬아슬할 만큼 높거나 까마득할 정도로 멀게.",example:"산봉우리가 아스라이 보인다."},
+  {id:73,word:"벋대다",hanja:"",meaning:"쉬이 따르지 않고 고집스럽게 버티다.",example:"아이가 가기 싫다며 벋대었다."},
+  {id:74,word:"멋쩍다",hanja:"",meaning:"어색하고 쑥스럽다.",example:"그는 자신의 행동이 멋쩍은지 허탈한 표정을 지었다."},
+  {id:75,word:"동정",hanja:"同情",meaning:"남의 어려운 처지를 자기 일처럼 딱하고 가엾게 여김.",example:"그녀의 불쌍한 처지는 주위 사람의 동정을 끌었다."},
+  {id:76,word:"비꼬다",hanja:"",meaning:"비틀거나 꼬아서 비웃거나 빈정대다.",example:"이 만화는 환경 오염의 현실을 비꼬고 있다."},
+  {id:77,word:"트다",hanja:"",meaning:"싹이나 움이 돋아나다.",example:"봄이면 모든 식물의 움이 튼다."},
+  {id:78,word:"순항",hanja:"順航",meaning:"순조롭게 항행함.",example:"고요한 뱃길 순항의 내일이 꼭 찾아온다."},
+  {id:79,word:"항로",hanja:"航路",meaning:"배나 비행기가 다니는 길.",example:"인생 항로 파도는 높고 폭풍우 몰아쳐도."},
+  {id:80,word:"고행길",hanja:"苦行—",meaning:"힘들고 고된 길.",example:"긴 고행길 멈추지 말고 별빛을 따라가라."},
+  {id:81,word:"모순",hanja:"矛盾",meaning:"두 사실이 이치상 서로 맞지 않음.",example:"'모순'이라는 단어를 통해 역설 표현의 원리를 이해한다."},
+  {id:82,word:"지양",hanja:"止揚",meaning:"더 높은 단계로 오르기 위하여 어떤 것을 하지 않음.",example:"정해진 정답을 작성하는 것을 지양하고 스스로 정리하자."},
+  {id:83,word:"창시",hanja:"創始",meaning:"처음으로 시작함.",example:"한글을 창시하신 세종 대왕님께 편지를 썼다."},
+  {id:84,word:"원칙",hanja:"原則",meaning:"어떤 행동이나 이론 따위에서 일관되게 지켜야 하는 기본적인 규칙이나 법칙.",example:"실험을 통해 얼음이 어는 원칙을 깨달았다."},
+  {id:85,word:"설계",hanja:"設計",meaning:"앞으로 할 일의 내용과 순서를 미리 정함.",example:"보고서 작성을 위해 자료를 모으고 전체적인 설계를 했다."},
+  {id:86,word:"관습",hanja:"慣習",meaning:"어떤 사회에서 오랫동안 지켜 내려와 그 사회 성원들이 널리 인정하는 질서나 풍습.",example:"언어 공동체가 공유하는 작문 관습의 특성을 이해한다."},
+  {id:87,word:"함양",hanja:"涵養",meaning:"학문이나 덕성, 역량 따위를 기르고 닦음.",example:"매체를 비판적으로 이해하는 능력을 함양해야 한다."},
+  {id:88,word:"의의",hanja:"意義",meaning:"어떤 사실이나 행위의 중요성이나 가치.",example:"핵심 역량을 기르는 활동은 국어 교육에서 큰 의의가 있다."},
+  {id:89,word:"재해석",hanja:"再解釋",meaning:"이미 해석된 것을 다시 새롭게 해석함.",example:"선배들의 작품을 자신의 관점에서 재해석하였다."},
+  {id:90,word:"추론",hanja:"推論",meaning:"알려진 판단을 근거로 하여 새로운 판단을 이끌어 냄.",example:"주어진 내용을 바탕으로 미루어 생각하여 논함."},
+  {id:91,word:"상위 인지",hanja:"上位認知",meaning:"자신의 사고 과정을 스스로 인식하고 조절하는 능력.",example:"자기 생각을 들여다보는 상위 인지 과정을 거친다."},
+  {id:92,word:"유의",hanja:"留意",meaning:"마음에 새겨 두어 조심함.",example:"영상 매체 자료를 제작할 때의 유의점을 익힌다."},
+  {id:93,word:"전략",hanja:"戰略",meaning:"목적을 달성하기 위한 방법이나 책략.",example:"매체가 사용하는 설득 전략이나 재현 방식을 이해한다."},
+  {id:94,word:"유창",hanja:"流暢",meaning:"말이나 글이 거침없이 잘 통함.",example:"글의 의미를 파악하며 유창하게 글을 읽는 능력을 기른다."},
+  {id:95,word:"통일성",hanja:"統一性",meaning:"전체가 하나로 고르게 어우러지는 성질.",example:"글 전체를 대상으로 통일성 있게 고쳐 써 봅시다."},
+  {id:96,word:"습득",hanja:"習得",meaning:"배워서 익힘.",example:"독서는 단순한 정보 습득 이상의 가치가 있다."},
+  {id:97,word:"의혹",hanja:"疑惑",meaning:"의심스럽고 이상하게 여기는 마음.",example:"오염 물질을 고의로 유출한 것이 아니냐는 의혹을 제기했다."},
+  {id:98,word:"제기",hanja:"提起",meaning:"의견이나 문제 따위를 내어 놓음.",example:"지역 주민들은 공장에 대한 의혹을 제기하였다."},
+  {id:99,word:"파손",hanja:"破損",meaning:"깨어지거나 상하여 못 쓰게 됨.",example:"보관 창고가 파손되어 오염 물질이 유출되었다고 밝혔다."},
+  {id:100,word:"주체",hanja:"主體",meaning:"어떤 행동이나 운동의 중심이 되는 것.",example:"자신들이 동작의 주체라는 사실을 드러내지 않으려 한다."},
+  {id:101,word:"복원",hanja:"復原",meaning:"원래대로 회복함.",example:"훼손된 국가유산의 복원이 시급한 과제이다."},
+  {id:102,word:"복귀",hanja:"復歸",meaning:"본래의 자리나 상태로 되돌아가거나 되돌아옴.",example:"부상으로 쉬고 있던 선수의 복귀를 환영한다."},
+  {id:103,word:"훼손",hanja:"毁損",meaning:"체면, 명예 따위를 손상함. 또는 물건을 손상함.",example:"무분별한 개발은 자연 환경을 훼손하기 마련이다."},
+  {id:104,word:"미관",hanja:"美觀",meaning:"아름다운 경관이나 외관.",example:"도시의 미관을 살리기 위해 벽화를 그리는 사업을 추진했다."},
+  {id:105,word:"저명인사",hanja:"著名人士",meaning:"사회적으로 이름이 널리 알려진 사람.",example:"사회적으로 널리 알려진 저명인사를 초청해 강연을 들었다."},
+  {id:106,word:"재구성",hanja:"再構成",meaning:"이미 구성된 것을 다시 새롭게 구성함.",example:"소단원이나 제재의 내용을 재구성하여 자료를 만든다."},
+  {id:107,word:"창의",hanja:"創意",meaning:"새로운 것을 처음으로 생각해 내는 것.",example:"창의적 체험 활동에 필요한 다양한 수업 자료를 준비했다."},
+  {id:108,word:"협업",hanja:"協業",meaning:"여럿이 힘을 합하여 일함.",example:"동료 교사와 협업하며 완성도 있는 자료를 만든다."},
+  {id:109,word:"매체",hanja:"媒體",meaning:"어떤 작용을 한쪽에서 다른 쪽으로 전달하는 물체, 수단, 기관.",example:"매체로 세상과 소통하는 방법을 배워 봅시다."},
+  {id:110,word:"복합양식성",hanja:"複合樣式性",meaning:"다양한 의미 전달 방식이 복합적으로 사용되는 성질.",example:"복합양식성을 고려하여 영상 매체 자료를 제작한다."},
+  {id:111,word:"반향",hanja:"反響",meaning:"어떤 일이 세상에 영향을 미쳐 반응이 일어남.",example:"한글에 대한 외국인들의 반향은 매우 뜨겁다."},
+  {id:112,word:"탐구",hanja:"探究",meaning:"진리, 학문 따위를 파고들어 깊이 연구함.",example:"피동 표현의 의도와 효과를 탐구해 보는 시간을 가졌다."},
+  {id:113,word:"이해관계",hanja:"利害關係",meaning:"이익과 손해가 걸려 있는 관계.",example:"개인이나 집단 사이의 이해관계가 달라 갈등을 빚는다."},
+  {id:114,word:"배경지식",hanja:"背景知識",meaning:"어떤 내용을 이해하는 데 도움을 주는 이미 알고 있는 지식.",example:"독자의 배경지식을 고려하여 설명할 내용을 정한다."},
+  {id:115,word:"맥락",hanja:"脈絡",meaning:"사물 따위가 서로 이어져 있는 관계나 연관.",example:"소통 맥락과 매체 특성을 고려하여 자료를 제작한다."},
+  {id:116,word:"수용자",hanja:"受容者",meaning:"정보나 문화를 받아들이는 사람.",example:"적합한 양식과 수용자의 반응을 고려하여 제작하자."},
+  {id:117,word:"발상",hanja:"發想",meaning:"어떤 생각을 해 냄. 또는 그 생각.",example:"자신의 경험을 개성적인 발상과 표현으로 나타낸다."},
+  {id:118,word:"형상화",hanja:"形象化",meaning:"추상적인 것을 구체적인 모양으로 나타냄.",example:"문학은 작가의 경험을 예술적으로 형상화한 결과물이다."},
+];
+
+// ============================================================
+// 칭호 시스템
+// ============================================================
+function getTitle(pct) {
+  if (pct >= 95) return { emoji:'🏆', title:'류봉두의 수제자', sub:'완벽해요! 선생님도 놀랐을걸요?', color:'gold',   barColor:'#F5A623' };
+  if (pct >= 90) return { emoji:'⚔️', title:'류봉두의 오른팔', sub:'거의 다 왔어요! 한 끗 차이!',  color:'silver', barColor:'#8EAABB' };
+  if (pct >= 80) return { emoji:'🎓', title:'류봉두의 우등생', sub:'꽤 하는데요? 조금만 더!',       color:'bronze', barColor:'#C08553' };
+  if (pct >= 70) return { emoji:'🌿', title:'류봉두의 새싹',  sub:'절반은 훌쩍 넘었어요. 분발해요!', color:'green',  barColor:'#43A047' };
+  if (pct >= 50) return { emoji:'🌱', title:'류봉두의 떡잎',  sub:'가능성은 있어요. 복습이 필요해요!',color:'sprout', barColor:'#7CB342' };
+  return          { emoji:'😭', title:'류봉두의 걱정거리', sub:'선생님이 울고 있어요… 다시 도전!', color:'red',    barColor:'#E53935' };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+let playerName = '';
+let selectedGrade = 1;
+let questions = [];
+let currentIdx = 0;
+let score = 0;
+let correctCount = 0;
+let wrongWords = [];
+let results = [];
+let answered = false;
+const LABELS = ['①','②','③','④'];
+const STORAGE_KEY = 'rbd_quiz_v4';
+
+// ============================================================
+// SCORES
+// ============================================================
+function getScores() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
+function saveScore(name, grade, sc, correct, total) {
+  const arr = getScores();
+  arr.push({ name, grade, score: sc, correct, total, pct: Math.round(correct/total*100), date: new Date().toLocaleDateString('ko-KR') });
+  arr.sort((a,b) => b.score - a.score);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr.slice(0, 50)));
+}
+
+function init() {
+  renderScoreboard('score-list-start');
+  if (getScores().length > 0) document.getElementById('scoreboard-card').style.display = 'block';
+  document.getElementById('name-input').addEventListener('input', e => {
+    document.getElementById('start-btn').disabled = e.target.value.trim().length === 0;
+  });
+}
+
+function selectGrade(el, grade) {
+  document.querySelectorAll('.grade-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedGrade = grade;
+}
+
+// ============================================================
+// 실시간 레벨 업데이트
+// ============================================================
+function updateLiveLevel() {
+  if (currentIdx === 0 && correctCount === 0) {
+    document.getElementById('live-emoji').textContent = '🌱';
+    document.getElementById('live-title').textContent = '류봉두의 떡잎';
+    document.getElementById('live-sub').textContent = '문제를 풀수록 레벨이 올라가요!';
+    document.getElementById('live-pct').textContent = '-';
+    document.getElementById('live-pct-bar').style.width = '0%';
+    document.getElementById('live-pct-bar').style.backgroundColor = '#7CB342';
+    return;
+  }
+  const done = currentIdx + 1;
+  const pct = Math.round(correctCount / done * 100);
+  const t = getTitle(pct);
+  document.getElementById('live-emoji').textContent = t.emoji;
+  document.getElementById('live-title').textContent = t.title;
+  document.getElementById('live-sub').textContent = `${done}문제 중 ${correctCount}개 정답`;
+  document.getElementById('live-pct').textContent = pct + '%';
+  document.getElementById('live-pct-bar').style.width = pct + '%';
+  document.getElementById('live-pct-bar').style.backgroundColor = t.barColor;
+}
+
+// ============================================================
+// START
+// ============================================================
+function startQuiz() {
+  playerName = document.getElementById('name-input').value.trim();
+  if (!playerName) return;
+  document.getElementById('topbar-user').textContent = playerName + '님';
+  document.getElementById('topbar-user').style.display = 'block';
+
+  const wordPool = selectedGrade === 1 ? WORDS_1 : WORDS_2;
+  const shuffled = [...wordPool].sort(() => Math.random() - 0.5);
+  const types = ['meaning', 'word', 'example'];
+  questions = shuffled.map((w, i) => buildQ(w, types[i % 3], wordPool));
+
+  currentIdx = 0; score = 0; correctCount = 0;
+  wrongWords = []; results = []; answered = false;
+
+  showScreen('screen-quiz');
+  updateLiveLevel();
+  renderQ();
+}
+
+// ============================================================
+// BUILD QUESTION
+// ============================================================
+function buildQ(word, type, pool) {
+  const wrong = pool.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  let typeTag, qText, hint, correctText, options;
+
+  if (type === 'meaning') {
+    typeTag = '📖 뜻 찾기';
+    qText = `"${word.word}"의 뜻은?`;
+    hint = word.hanja ? `한자: ${word.hanja}` : '';
+    correctText = word.meaning;
+    options = shuffle([word.meaning, ...wrong.map(w => w.meaning)]);
+  } else if (type === 'word') {
+    typeTag = '🔤 단어 찾기';
+    qText = '다음 뜻에 해당하는 단어는?';
+    hint = word.meaning;
+    correctText = word.word;
+    options = shuffle([word.word, ...wrong.map(w => w.word)]);
+  } else {
+    typeTag = '💬 예문 추론';
+    qText = '빈칸에 들어갈 알맞은 단어는?';
+    hint = word.example.replace(word.word, '『　　　　』');
+    correctText = word.word;
+    options = shuffle([word.word, ...wrong.map(w => w.word)]);
+  }
+  return { word, type, typeTag, qText, hint, correctText, options };
+}
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+// ============================================================
+// RENDER QUESTION
+// ============================================================
+function renderQ() {
+  answered = false;
+  const q = questions[currentIdx];
+  const total = questions.length;
+
+  document.getElementById('progress-fill').style.width = ((currentIdx / total) * 100) + '%';
+  document.getElementById('quiz-progress').textContent = `${currentIdx + 1} / ${total}`;
+  document.getElementById('quiz-score-badge').textContent = `${score}점`;
+  document.getElementById('q-type-tag').textContent = q.typeTag;
+  document.getElementById('q-text').textContent = q.qText;
+  document.getElementById('q-hint').textContent = q.hint;
+
+  const optList = document.getElementById('options-list');
+  optList.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-label">${LABELS[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(btn, opt, q);
+    optList.appendChild(btn);
+  });
+
+  document.getElementById('feedback-box').className = 'feedback-box';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const card = document.getElementById('quiz-card');
+  card.style.opacity = '0'; card.style.transform = 'translateY(8px)';
+  requestAnimationFrame(() => {
+    card.style.transition = 'opacity .22s, transform .22s';
+    card.style.opacity = '1'; card.style.transform = 'none';
+  });
+}
+
+// ============================================================
+// ANSWER
+// ============================================================
+function selectAnswer(btn, chosen, q) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = chosen === q.correctText;
+  const pts = Math.round(1000 / questions.length);
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.querySelector('span:last-child').textContent === q.correctText) b.classList.add('reveal');
+  });
+
+  if (isCorrect) {
+    btn.classList.remove('reveal'); btn.classList.add('correct');
+    score += pts; correctCount++;
+  } else {
+    btn.classList.add('wrong');
+    wrongWords.push({ word: q.word, myAnswer: chosen });
+  }
+
+  results.push({ word: q.word.word, type: q.type, correct: isCorrect, myAnswer: chosen, correctAnswer: q.correctText });
+
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box show ' + (isCorrect ? 'ok' : 'ng');
+  document.getElementById('fb-title').textContent = isCorrect ? '🎉 정답입니다!' : '❌ 틀렸어요';
+  document.getElementById('fb-meaning').textContent = `${q.word.word}: ${q.word.meaning}`;
+  document.getElementById('fb-example').textContent = `예문: ${q.word.example}`;
+
+  document.getElementById('quiz-score-badge').textContent = `${score}점`;
+  updateLiveLevel();
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= questions.length) endQuiz();
+  else renderQ();
+}
+
+// ============================================================
+// END
+// ============================================================
+function endQuiz() {
+  const total = questions.length;
+  const pct = Math.round(correctCount / total * 100);
+  saveScore(playerName, selectedGrade, score, correctCount, total);
+
+  // 칭호 배너
+  const t = getTitle(pct);
+  const banner = document.getElementById('title-banner');
+  banner.className = 'title-banner ' + t.color;
+  document.getElementById('banner-emoji').textContent = t.emoji;
+  document.getElementById('banner-title').textContent = t.title;
+  document.getElementById('banner-sub').textContent = `${playerName}님 · ${pct}% 정답 · ${correctCount}/${total}문제\n${t.sub}`;
+
+  document.getElementById('res-correct').textContent = correctCount;
+  document.getElementById('res-wrong').textContent = total - correctCount;
+  document.getElementById('res-score').textContent = score;
+
+  document.getElementById('send-status').style.display = 'none';
+  document.getElementById('send-status').className = 'send-status';
+  document.getElementById('btn-send').disabled = false;
+  document.getElementById('btn-send').textContent = '📤 결과 전송하기';
+
+  // 틀린 단어 복습
+  const wrongSec = document.getElementById('wrong-section');
+  if (wrongWords.length > 0) {
+    wrongSec.style.display = 'block';
+    document.getElementById('wrong-count-badge').textContent = wrongWords.length + '개';
+    document.getElementById('wrong-list').innerHTML = wrongWords.map(w =>
+      `<div class="wrong-item">
+        <div class="wrong-word">${w.word.word}${w.word.hanja ? ` (${w.word.hanja})` : ''}</div>
+        <div class="wrong-meaning">${w.word.meaning}</div>
+        <div class="wrong-example">예문: ${w.word.example}</div>
+      </div>`
+    ).join('');
+  } else {
+    wrongSec.style.display = 'none';
+  }
+
+  renderScoreboard('score-list-result');
+  showScreen('screen-result');
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// SEND TO SHEET
+// ============================================================
+async function sendToSheet() {
+  const btn = document.getElementById('btn-send');
+  const st = document.getElementById('send-status');
+  btn.disabled = true;
+  st.className = 'send-status sending'; st.textContent = '⏳ 전송 중...';
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+  const payload = {
+    name: playerName,
+    grade: selectedGrade + '학년',
+    date: dateStr,
+    score, correct: correctCount,
+    total: questions.length,
+    pct: Math.round(correctCount / questions.length * 100),
+    details: results.map(r => `${r.word}:${r.correct ? 'O' : 'X'}`).join('|'),
+    wrongWords: wrongWords.map(w => w.word.word).join(', ')
+  };
+
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    st.className = 'send-status sent'; st.textContent = '✅ 구글 시트에 결과가 전송되었습니다!';
+    btn.textContent = '✅ 전송 완료';
+  } catch (e) {
+    st.className = 'send-status failed'; st.textContent = '❌ 전송 실패. 인터넷 연결을 확인해 주세요.';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// SCOREBOARD
+// ============================================================
+function renderScoreboard(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const scores = getScores();
+  if (!scores.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;padding:16px 0;">아직 기록이 없어요</div>';
+    return;
+  }
+  el.innerHTML = scores.slice(0, 10).map((s, i) => {
+    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    return `<div class="score-item">
+      <span class="score-rank ${rc}">${medal}</span>
+      <span class="score-name">${s.name}</span>
+      <span class="score-grade-badge">${s.grade||''}</span>
+      <span style="font-size:11px;color:var(--text3);margin-right:4px">${s.date}</span>
+      <span class="score-val">${s.pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function retryQuiz() { startQuiz(); }
+function goHome() {
+  showScreen('screen-start');
+  document.getElementById('topbar-user').style.display = 'none';
+  renderScoreboard('score-list-start');
+  document.getElementById('scoreboard-card').style.display = getScores().length ? 'block' : 'none';
+}
+
+init();
+</script>
+</body>
+</html>
